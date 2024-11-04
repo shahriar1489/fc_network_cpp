@@ -1,0 +1,6 @@
+Weight Shape: (1, 1)
+-0.3237923681735992
+Bias Shape: (1,)
+-0.7618687748908997
+Activation Code: 1
+
