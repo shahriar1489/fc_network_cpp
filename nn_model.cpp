@@ -518,11 +518,9 @@ void testModelsOnSampledData(){
         // Write each result to a separate line
         for(unsigned j = 0; j < results.size(); j++){
             resultFile << results[j] << endl; 
-        }
-        
+        }        
 
         resultFile.close();
-
 
         X_test.clear(); 
         file.close();
@@ -666,13 +664,10 @@ void testModelsOnSampledData(){
             resultFile << results[j] << endl; 
         }
         
-
         resultFile.close();
-
 
         X_test.clear(); 
         file.close();
-
     }
 
     //print("-------------------------\n"); 
@@ -821,9 +816,86 @@ void testModelsOnSampledData(){
     }
 }
 
+void testOnLargeNetwork(){
+    
+    string reg_onnx = "regression_model.onnx"; 
+    FCNetwork reg(reg_onnx);
+    
+    // At this point, we can successfully read the model
+
+    string filePath = "data/regression_test.txt"; // Update with your actual path
+    ifstream file(filePath);
+    vector<double> data;
+
+    if (!file.is_open()) {
+        cerr << "Error opening file: " << filePath << endl;
+        return ;
+    }
+    
+    Matrix<double> m(3, 1); 
+    vector< Matrix<double> > results; 
+    string line;
+    while (getline(file, line)) {
+        istringstream iss(line);
+        string value;
+        
+        // Read each comma-separated value as double
+        while (getline(iss, value, ',')) {
+            data.push_back(stod(value)); // Convert string to double and add to vector
+        }
+
+        cout << "Size of vector : " << data.size() << endl; 
+
+        // Convert the vector to a matrix double and feed it to nn
+        for(unsigned i = 0; i < data.size()-1; i++){
+            m[i][0] = data.at(i); 
+        } // I got one tuple at this point 
+        data.clear(); 
+        //cout << reg.forward(m); // I got the result I wan  
+        results.push_back(reg.forward(m)) ;
+        //results.push_back(reg.forward(m)); 
+
+        
+        //exit(0); 
+    }
+    
+    file.close();
+
+    //cout << "results size : " , results.size(); 
+    //for(unsigned i = 0; i < results.size(); i++){
+    //    cout << results.at(i) << endl; 
+    //}
+    
+    // Save the results to a file
+    string resultFilePath = "results/onnx/regression_test.txt";
+    ofstream resultFile(resultFilePath);
+    if (!resultFile.is_open()) {
+        cerr << "Error opening file: " << resultFilePath << endl;
+        return;
+    }
+    
+    resultFile << setprecision(16);  // Set precision to 16
+
+    // Write each result to the file
+    for(unsigned i = 0; i < results.size(); i++) {
+        for (unsigned j = 0; j < results.at(i).rows(); j++) {
+            for (unsigned k = 0; k < results.at(i).cols(); k++) {
+                resultFile << results.at(i)[j][k];
+                if (k < results.at(i).cols() - 1) resultFile << ", "; // Comma-separated for columns
+            }
+            resultFile << endl; // New line for each row
+        }
+    }
+
+    resultFile.close();
+
+    cout << "Results saved to " << resultFilePath << endl;
+}
+
 int main(){
 
-    testModelsOnSampledData(); 
+    //testModelsOnSampledData(); 
+    testOnLargeNetwork(); 
 
     return 0; 
 }
