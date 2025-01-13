@@ -6,8 +6,8 @@
   
 #### project_root/
 #### ├── model/
-#### │   ├── ONNX/        # Place ONNX models here
-#### │   ├── pth/         # PyTorch models (for comparison)
+#### ├── ONNX/        # Place ONNX models here
+#### ├── pth/         # PyTorch models (for comparison)
 #### ├── weights_and_biases/
 #### ├── results/
 #### ├── data/
